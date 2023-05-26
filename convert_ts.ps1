@@ -1,5 +1,6 @@
 $logFile = "../log/logfile.log"  # ログファイルのパスを指定
 
+# 現在の日付の2日前の日付を取得する
 $nw = Get-Date -Format o
 $dt = [DateTime]$nw
 $dt = $dt.AddDays(-2)
@@ -24,35 +25,43 @@ if ($file_list_count -eq 0){
     exit
 # 対象が20個以下の場合
 } elseif ($file_list_count -le $process_count){
-    $target_file_list = $file_list 
+    $target_file_list = $file_list
+# 対象が20個より多い場合はスライスする
 } else {
     $index = $process_count - 1
     $target_file_list = $file_list[0..$index]
 }
 
+# ぐるぐるぐるぐる
 foreach($f in $target_file_list){
     ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
 }
+
 WriteLog -message "処理終了"
 
 
+# ログ出力を外出しメソッド
 function WriteLog($message){
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "$timestamp - $message"
     Add-Content -Path $global:logFile -Value $logMessage
 }
 
+# 実際にmp4に変換するメソッド
 function ConvertTo-MP4($inputPath, $targetTime){
     $fileInfo = Get-ItemProperty -Path $inputPath
     $fileTimeStamp = $fileInfo.LastWriteTime.ToString("o")
 
+    # 録画中のファイルを読み込まないために、ファイルの更新日時が指定日時よりも新しい場合は処理しない
     if ($fileTimeStamp -ge $targetTime){
         return
     }
     
+    # Windowsはカスです
     $inputPath = $inputPath -replace "\\", "/"
     $output_path = [IO.Path]::ChangeExtension($inputPath, '.mp4')
 
+    # パラメータ設定
     $cmd = @()
     $cmd += 'C:/Users/Public/ffmpeg.exe'
     $cmd += "-i"
@@ -78,6 +87,7 @@ function ConvertTo-MP4($inputPath, $targetTime){
             WriteLog -message "$inputPath - 失敗"
         }
     } catch {
+        WriteLog -message $PSItem.ToString()
         WriteLog -message "$inputPath - 失敗"
     }
 }
