@@ -12,6 +12,7 @@ WriteLog -message "処理開始"
 $yaml = Get-Content -Path "../config/config.yaml" | ConvertFrom-Yaml
 $source_path = $yaml.source_path + "*.ts"
 $process_count = $yaml.process_count
+$ffmpeg_path = $yaml.ffmpeg_path
 
 # 対象ファイル一覧を取得する
 $file_list = Get-ChildItem -Path $source_path
@@ -63,7 +64,7 @@ function ConvertTo-MP4($inputPath, $targetTime){
 
     # パラメータ設定
     $cmd = @()
-    $cmd += 'C:/Users/Public/ffmpeg.exe'
+    $cmd += $ffmpeg_path
     $cmd += "-i"
     $cmd += "`"$inputPath`""
     $cmd += "-vf"
