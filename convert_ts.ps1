@@ -1,11 +1,12 @@
-$logFile = "../log/logfile.log"  # ログファイルのパスを指定
-
-
 # ログ出力を外出しメソッド
 function WriteLog($message){
+    # ログファイルのパスを設定
+    $timestamp2 = Get-Date -Format "yyyyMMdd"
+    $logFile = "../log/$timestamp2.log"
+    # メッセージの組立
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "$timestamp - $message"
-    Add-Content -Path $global:logFile -Value $logMessage
+    Add-Content -Path $logFile -Value $logMessage
 }
 
 # 実際にmp4に変換するメソッド
