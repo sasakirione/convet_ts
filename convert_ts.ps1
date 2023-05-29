@@ -66,9 +66,11 @@ WriteLog -message "処理開始"
 # yaml設定ファイルを読み込む
 $json = Get-Content -Path "./config.json" | ConvertFrom-Json
 $source_path = $json.source_path + "*.ts"
-WriteLog -message $source_path
+WriteLog -message "ソースパス：$source_path"
 $process_count = $json.process_count
+WriteLog -message "同時処理数：$process_count"
 $ffmpeg_path = $json.ffmpeg_path
+WriteLog -message "ffmpegパス：$ffmpeg_path"
 
 # 対象ファイル一覧を取得する
 $file_list = Get-ChildItem -Path $source_path
