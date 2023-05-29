@@ -1,8 +1,0 @@
-// 変換対象のTSファイルが入っているパス
-source_path: "D:/録画未整理/"
-
-// 一回に処理するファイルの数
-process_count: 20
-
-// ffmpegのパス
-ffmpeg_path: "C:/Users/Public/ffmpeg.exe"

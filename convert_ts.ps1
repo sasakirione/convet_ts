@@ -1,45 +1,5 @@
 $logFile = "../log/logfile.log"  # ログファイルのパスを指定
 
-# 現在の日付の2日前の日付を取得する
-$nw = Get-Date -Format o
-$dt = [DateTime]$nw
-$dt = $dt.AddDays(-2)
-$nw = $dt.ToString("o")
-
-WriteLog -message "処理開始"
-
-# yaml設定ファイルを読み込む
-$yaml = Get-Content -Path "../config/config.yaml" | ConvertFrom-Yaml
-$source_path = $yaml.source_path + "*.ts"
-$process_count = $yaml.process_count
-$ffmpeg_path = $yaml.ffmpeg_path
-
-# 対象ファイル一覧を取得する
-$file_list = Get-ChildItem -Path $source_path
-$file_list_count = $file_list.Count
-
-# 対象ファイルが多すぎる場合に規定の数に絞る
-# 対象がない場合
-$target_file_list = @()
-if ($file_list_count -eq 0){
-    WriteLog -message "処理対象のファイルがありません"
-    exit
-# 対象が20個以下の場合
-} elseif ($file_list_count -le $process_count){
-    $target_file_list = $file_list
-# 対象が20個より多い場合はスライスする
-} else {
-    $index = $process_count - 1
-    $target_file_list = $file_list[0..$index]
-}
-
-# ぐるぐるぐるぐる
-foreach($f in $target_file_list){
-    ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
-}
-
-WriteLog -message "処理終了"
-
 
 # ログ出力を外出しメソッド
 function WriteLog($message){
@@ -90,5 +50,48 @@ function ConvertTo-MP4($inputPath, $targetTime){
     } catch {
         WriteLog -message $PSItem.ToString()
         WriteLog -message "$inputPath - 失敗"
+    
     }
 }
+
+# 現在の日付の2日前の日付を取得する
+$nw = Get-Date -Format o
+$dt = [DateTime]$nw
+$dt = $dt.AddDays(-2)
+$nw = $dt.ToString("o")
+
+WriteLog -message "処理開始"
+
+# yaml設定ファイルを読み込む
+$json = Get-Content -Path "./config.json" | ConvertFrom-Json
+$source_path = $json.source_path + "*.ts"
+WriteLog -message $source_path
+$process_count = $json.process_count
+$ffmpeg_path = $json.ffmpeg_path
+
+# 対象ファイル一覧を取得する
+$file_list = Get-ChildItem -Path $source_path
+$file_list_count = $file_list.Count
+WriteLog -message "処理対象のファイル数: $file_list_count"
+
+# 対象ファイルが多すぎる場合に規定の数に絞る
+# 対象がない場合
+$target_file_list = @()
+if ($file_list_count -eq 0){
+    WriteLog -message "処理対象のファイルがありません"
+    exit
+# 対象が20個以下の場合
+} elseif ($file_list_count -le $process_count){
+    $target_file_list = $file_list
+# 対象が20個より多い場合はスライスする
+} else {
+    $index = $process_count - 1
+    $target_file_list = $file_list[0..$index]
+}
+
+# ぐるぐるぐるぐる
+foreach($f in $target_file_list){
+    ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
+}
+
+WriteLog -message "処理終了"
