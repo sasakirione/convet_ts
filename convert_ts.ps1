@@ -101,12 +101,7 @@ if ($file_list_count -eq 0){
 
 # ぐるぐるぐるぐる
 foreach($f in $target_file_list){
-    try {
-        ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
-    } catch {
-        WriteLog -message $PSItem.ToString()
-        WriteLog -message "$($f.FullName) - 失敗"
-    }
+    ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
 }
 
 WriteLog -message "処理終了"
