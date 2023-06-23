@@ -23,9 +23,16 @@ function ConvertTo-MP4($inputPath, $targetTime){
     $inputPath = $inputPath -replace "\\", "/"
     $output_path = [IO.Path]::ChangeExtension($inputPath, '.mp4')
 
+    # 既に変換済みの場合は処理しない
+    if (os.path.exists($output_path)){
+        WriteLog -message "$inputPath - 既に変換済み"
+        return
+    }
+
     # パラメータ設定
     $cmd = @()
     $cmd += $ffmpeg_path
+    $cmd += "-n"
     $cmd += "-i"
     $cmd += "`"$inputPath`""
     $cmd += "-vf"
@@ -94,7 +101,12 @@ if ($file_list_count -eq 0){
 
 # ぐるぐるぐるぐる
 foreach($f in $target_file_list){
-    ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
+    try {
+        ConvertTo-MP4 -inputPath $f.FullName -targetTime $nw
+    } catch {
+        WriteLog -message $PSItem.ToString()
+        WriteLog -message "$($f.FullName) - 失敗"
+    }
 }
 
 WriteLog -message "処理終了"
