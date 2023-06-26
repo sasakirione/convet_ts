@@ -2,7 +2,7 @@
 function WriteLog($message){
     # ログファイルのパスを設定
     $timestamp2 = Get-Date -Format "yyyyMMdd"
-    $logFile = "../log/$timestamp2.log"
+    $logFile = "../log/$timestamp2-convertTS.log"
     # メッセージの組立
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "$timestamp - $message"
@@ -24,7 +24,7 @@ function ConvertTo-MP4($inputPath, $targetTime){
     $output_path = [IO.Path]::ChangeExtension($inputPath, '.mp4')
 
     # 既に変換済みの場合は処理しない
-    if (os.path.exists($output_path)){
+    if (Test-Path $output_path){
         WriteLog -message "$inputPath - 既に変換済み"
         return
     }
