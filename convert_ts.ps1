@@ -2,7 +2,7 @@
 function WriteLog($message){
     # ログファイルのパスを設定
     $timestamp2 = Get-Date -Format "yyyyMMdd"
-    $logFile = "../log/$timestamp2-convertTS.log"
+    $logFile = "../log/$timestamp2"+"_convert_ts.log"
     # メッセージの組立
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "$timestamp - $message"
@@ -50,8 +50,12 @@ function ConvertTo-MP4($inputPath, $targetTime){
         if ($return_code -eq 0){
             WriteLog -message "$inputPath - 成功"
             Remove-Item -Path $inputPath
-            Remove-Item -Path "$($inputPath).err"
-            Remove-Item -Path "$($inputPath).program.txt"
+            if (Test-Path "$($inputPath).err"){
+                Remove-Item -Path "$($inputPath).err"
+            }
+            if (Test-Path "$($inputPath).program.txt"){
+                Remove-Item -Path "$($inputPath).program.txt"
+            }
         } else {
             WriteLog -message "$inputPath - 失敗"
         }
